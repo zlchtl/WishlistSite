@@ -1,0 +1,59 @@
+{% extends 'account/base.html' %}
+
+{% block title %}Wishlist{% endblock %}
+
+{% block head %}
+    {% load static %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'account/js/check_input.js'%}"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-5">
+            <div class="card px-5 py-4" id="form1">
+                <div class="form-data">
+                    <div class="text-center mb-4">
+                        <h3>Search wishlists</h3>
+                    </div>
+                    <form id="wishlist-form" action="" method="post">
+                        <div class="forms-inputs mb-4">
+                            {% csrf_token %}
+                            <input type="text" id="username" name="username" placeholder="Enter username" class="form-control">
+                        </div>
+                        <div class="forms-inputs mb-4">
+                            <button type="submit" class="btn btn-warning btn-lg w-100">Find wishlists</button>
+                        </div>
+                        <div class="forms-inputs mb-4">
+                            {% if message %}
+                                <p>{{ message }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="forms-inputs mb-4">
+                            {% if user_is_authorized %}
+                                <hr>
+                                <div class="text-center mb-4">
+                                    <h3>Hi, {{user}}</h3>
+                                </div>
+                                <a href="{% url 'wishlists' username=user %}" class="btn btn-warning btn-lg btn-block" role="button" aria-pressed="true">My wishlists</a>
+                                <a href="{% url 'logout' %}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">Log out</a>
+                            {% endif %}
+                        </div>
+                        <div class="forms-inputs mb-4">
+                            <hr>
+                            <div class="row mb-3" role="group">
+                                <div class="col-sm"><a href="{% url 'login'%}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">Sign in</a></div>
+                                <div class="col-sm"><a href="{% url 'register'%}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">Sign up</a></div>
+                            </div>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

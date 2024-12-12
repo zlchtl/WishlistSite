@@ -1,0 +1,58 @@
+{% extends 'account/base.html' %}
+
+{% block title %}Wishlist{% endblock %}
+
+{% block head %}
+    {% load static %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'account/js/check_input.js'%}"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-5">
+            <div class="card px-5 py-4" id="form1">
+                <div class="form-data">
+                    {% if show_form %}
+                    <div class="text-center mb-4">
+                        <h3>New wishlist</h3>
+                    </div>
+                    <form id="wishlist-form" method="POST" action="">
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                            <div class="forms-inputs mb-4">
+                                <span>{{ field.label }}</span>
+                                {{ field }}
+                                <div><p id="{{ field.name }}-error" class="error"></p></div>
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <div><p class="error">{{ error }}</p></div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="mb-3"> <button class="btn btn-warning btn-lg w-100">New wishlist</button> </div>
+                    </form>
+                    {% endif %}
+                    <p></p>
+                    <div class="text-center mb-4">
+                        <h3>{{username}}`s wishlists </h3>
+                    </div>
+                    {% for wishlist in wishlists %}
+                        <div class="forms-inputs mb-4">
+                            <div class="col-sm"><a href="{% url 'wishlist' slug=wishlist.slug %}" class="btn btn-warning btn-lg btn-block" role="button" aria-pressed="true">{{ wishlist.event }}</a></div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+                <div class="col-sm"><a href="{% url 'index' %}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">back</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

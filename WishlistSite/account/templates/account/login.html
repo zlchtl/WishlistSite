@@ -1,0 +1,48 @@
+{% extends 'account/base.html' %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block head %}
+    {% load static %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-5">
+            <div class="card px-5 py-4" id="form1">
+                <div class="form-data">
+                    <div class="text-center mb-4">
+                        <h3>Sign in</h3>
+                    </div>
+                    <form id="login-form" method="POST" action="">
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                            <div class="forms-inputs mb-4">
+                                <span>{{ field.label }}</span>
+                                {{ field }}
+                                <div><p id="{{ field.name }}-error" class="error"></p></div>
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <div><p class="error">{{ error }}</p></div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+
+                        <div class="mb-3"> <button class="btn btn-warning btn-lg w-100">Login</button> </div>
+                    </form>
+
+                    <div class="row mb-3" role="group">
+                        <div class="col-sm"><a href="{% url 'index'%}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">Home</a></div>
+                        <div class="col-sm"><a href="{% url 'register'%}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">Sign up</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

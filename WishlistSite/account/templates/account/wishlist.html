@@ -1,0 +1,141 @@
+{% extends 'account/base.html' %}
+
+{% block title %}Wishlist{% endblock %}
+
+{% block head %}
+    {% load static %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'account/js/check_input.js'%}"></script>
+    <style>
+        .small-textarea {
+            height: 50px;
+            width: 100%;
+            font-size: 12px;
+            padding: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-8">
+            <div class="card px-5 py-4" id="form1">
+                <div class="form-data">
+                    {% if show_form %}
+                        <div class="text-center mb-4"><h3>Add a New Gift</h3></div>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-warning btn-lg w-100">Add Gift</button>
+                        </form>
+                        <hr>
+                    {% endif %}
+                </div>
+                <br>
+                <div class="text-center mb-4">
+                    <h3>{{ wishlist }}</h3>
+                </div>
+                {% if gifts %}
+                <div class="text-center mb-4">
+                    <div class="row mb-3 " role="group">
+                        <div class="col-sm text-center" ><h5>Sort by cost</h5></div>
+                        <div class="col-sm"><button onclick="sortGifts('asc')" class="btn btn-warning btn-lg w-100">Lower</button></div>
+                        <div class="col-sm"><button onclick="sortGifts('desc')" class="btn btn-warning btn-lg w-100">Higher</button></div>
+                    </div>
+                </div>
+                    <ul id="gift-list" class="gift-list list-group list-group-flush">
+                        {% for gift in gifts %}
+                            <li class="list-group-item" data-price="{{ gift.price }}">
+                                <div>
+                                    <div class="row mb-3" role="group">
+                                        {% if gift.reserved %}
+                                            <s><h5>{{ gift.name }} - {{ gift.price }}р</h5></s>
+                                            <div class="col-sm">
+                                                <a href="{{gift.url}}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">link</a>
+                                            </div>
+                                            <div class="col-sm">
+                                                <a href="{% url 'reserved' wishlist_slug=wishlist.slug slug=gift.slug %}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">cancel</a>
+                                            </div>
+                                        {% else %}
+                                            <div><h5>{{ gift.name }} - {{ gift.price }}р</h5></div>
+                                            <div class="col-sm">
+                                                <a href="{{gift.url}}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">link</a>
+                                            </div>
+                                            <div class="col-sm">
+                                                <a href="{% url 'reserved' wishlist_slug=wishlist.slug slug=gift.slug %}" class="btn btn-outline-warning btn-lg btn-block" role="button" aria-pressed="true">buy</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="row mb-3" role="group">
+                                        <div class="description" data-full="{{ gift.description }}">
+                                            {{ gift.description|truncatechars:150 }}
+                                        </div>
+                                        <span class="read-more" style="color: blue;">more</span>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="col-sm"><a href="{% url 'wishlists' username=wishlist.user %}" class="btn btn-warning btn-lg btn-block" role="button" aria-pressed="true">back</a></div>
+
+                {% else %}
+                    <div class="text-center mb-4">
+                        <h4>Wishlist is empty</h4>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const readMoreLinks = document.querySelectorAll('.read-more');
+
+        readMoreLinks.forEach(link => {
+            const description = link.previousElementSibling;
+            const fullText = description.getAttribute('data-full');
+
+            if (fullText.length <= 150) {
+                link.style.display = 'none';
+            } else {
+                link.style.display = 'inline';
+            }
+
+            link.addEventListener('click', () => {
+                if (description.textContent === fullText) {
+                    description.textContent = fullText.slice(0, 150) + '...';
+                    link.innerText = 'more';
+                } else {
+                    description.textContent = fullText;
+                    link.innerText = 'hide';
+                }
+            });
+        });
+    });
+</script>
+<script>
+    function sortGifts(order) {
+        const list = document.getElementById("gift-list");
+        const items = Array.from(list.children);
+
+        items.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.price);
+            const priceB = parseFloat(b.dataset.price);
+
+            if (order === 'asc') {
+                return priceA - priceB;
+            } else {
+                return priceB - priceA;
+            }
+        });
+
+        items.forEach(item => list.appendChild(item));
+    }
+</script>
+{% endblock %}
